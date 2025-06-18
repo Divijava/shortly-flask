@@ -1,16 +1,22 @@
 from flask import Flask, request, redirect, render_template
-import string, random
+import string
+import random
 import psycopg2
+import os
+import urllib.parse as up
 
 app = Flask(__name__)
 
-# Connect to PostgreSQL
+# Connect to PostgreSQL using DATABASE_URL (for Render)
 def get_db_connection():
+    up.uses_netloc.append("postgres")
+    url = up.urlparse(os.environ["DATABASE_URL"])
     return psycopg2.connect(
-        host="localhost",
-        database="shortly_db",
-        user="postgres",
-        password="Simba0504@"  # 👈 Replace with your PostgreSQL password
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
     )
 
 # Generate short ID
