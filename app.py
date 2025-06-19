@@ -3,10 +3,13 @@ import string, random
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
+import qrcode
+import io
+import base64
 
 app = Flask(__name__)
 
-# 🔐 Load database URL from Render (environment variable or hardcoded as fallback)
+# Render PostgreSQL URL
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://shortly_db_4mdg_user:T1QBJODWO5pydNnm344wLqgy37IuQzj2@dpg-d19jc1je5dus7392sq60-a.oregon-postgres.render.com/shortly_db_4mdg")
 
 # Connect to PostgreSQL
@@ -20,6 +23,7 @@ def generate_short_id(length=6):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     short_url = None
+    qr_b64 = None  # Needed for GET request
     if request.method == 'POST':
         original_url = request.form['url']
         short_id = generate_short_id()
@@ -33,7 +37,13 @@ def home():
 
         short_url = request.host_url + short_id
 
-    # 🧠 Show last 5 shortened links
+        # Generate QR code
+        img = qrcode.make(short_url)
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        qr_b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    # Get 5 recent shortened links
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT short_id, original_url, created_at FROM urls ORDER BY created_at DESC LIMIT 5")
@@ -41,7 +51,7 @@ def home():
     cur.close()
     conn.close()
 
-    return render_template('index.html', short_url=short_url, links=links)
+    return render_template('index.html', short_url=short_url, links=links, qr_b64=qr_b64)
 
 @app.route('/<short_id>')
 def redirect_to_original(short_id):
