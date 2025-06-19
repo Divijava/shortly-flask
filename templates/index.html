@@ -4,110 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shortly — URL Shortener</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --bg: #f9fafb;
-      --card: #ffffff;
-      --border: #e5e7eb;
-      --text: #1f2937;
-      --muted: #6b7280;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-
-    .container {
-      max-width: 500px;
-      width: 100%;
-      background: var(--card);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
-      border: 1px solid var(--border);
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    form {
-      display: flex;
-      gap: 0.5rem;
-      flex-direction: column;
-    }
-
-    input[type="text"] {
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    button {
-      background: var(--primary);
-      color: white;
-      padding: 0.75rem;
-      font-size: 1rem;
-      font-weight: 500;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    button:hover {
-      background: #4338ca;
-    }
-
-    .result {
-      margin-top: 1.5rem;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .result a {
-      color: var(--primary);
-      font-weight: 500;
-      word-break: break-all;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 1.25rem;
-      }
-
-      h1 {
-        font-size: 1.4rem;
-      }
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Shorten a URL</h1>
-    <form method="POST">
-      <input type="text" name="url" placeholder="Enter a long URL" required />
-      <button type="submit">Shorten</button>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white shadow-xl rounded-xl p-6 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Shorten a URL</h1>
+    
+    <form method="POST" class="flex flex-col gap-4">
+      <input
+        type="text"
+        name="url"
+        placeholder="Enter a long URL"
+        required
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <button
+        type="submit"
+        class="bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+      >
+        Shorten
+      </button>
     </form>
+
     {% if short_url %}
-    <div class="result">
-      Short URL: <br />
-      <a href="{{ short_url }}" target="_blank">{{ short_url }}</a>
+    <div class="mt-6 text-center text-sm text-gray-600">
+      <p>Short URL:</p>
+      <a
+        href="{{ short_url }}"
+        class="text-indigo-600 font-medium break-all hover:underline"
+        target="_blank"
+      >{{ short_url }}</a>
     </div>
     {% endif %}
   </div>
