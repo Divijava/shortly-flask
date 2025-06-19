@@ -5,16 +5,26 @@ import qrcode
 import io
 import base64
 
+
+
+import os
+import psycopg2
+import urllib.parse as urlparse
+
 app = Flask(__name__)
 
-# PostgreSQL connection (update with your credentials or use Render env vars)
+urlparse.uses_netloc.append("postgres")
+db_url = urlparse.urlparse(os.environ["DATABASE_URL"])
+
 def get_db_connection():
     return psycopg2.connect(
-        host="localhost",  # or your Render hostname
-        database="shortly_db",
-        user="postgres",
-        password="yourpassword"
+        dbname=db_url.path[1:],
+        user=db_url.username,
+        password=db_url.password,
+        host=db_url.hostname,
+        port=db_url.port
     )
+
 
 # Generate short id
 def generate_short_id(length=6):
