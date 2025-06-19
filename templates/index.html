@@ -11,35 +11,56 @@
     }
   </script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex items-center justify-center px-4">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col items-center justify-start px-4 py-10">
   <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-2xl">
 
     <!-- Dark Mode Toggle -->
-    <div class="flex justify-end mb-4">
+    <div class="flex justify-end">
       <label class="flex items-center space-x-2 cursor-pointer">
-        <span class="text-sm">🌙</span>
+        <span class="text-sm text-gray-600 dark:text-gray-300">🌙</span>
         <div class="relative">
           <input type="checkbox" id="darkToggle" class="sr-only">
-          <div class="block bg-gray-300 dark:bg-indigo-600 w-10 h-6 rounded-full"></div>
+          <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
           <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
         </div>
-        <span class="text-sm">☀️</span>
+        <span class="text-sm text-gray-600 dark:text-gray-300">☀️</span>
       </label>
     </div>
 
     <h1 class="text-2xl font-bold text-center mb-6">Shorten a URL</h1>
 
     <form method="POST" class="flex flex-col gap-4">
-      <input type="text" name="url" placeholder="Enter a long URL" required class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600" />
-      <button type="submit" class="bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">Shorten</button>
+      <input
+        type="text"
+        name="url"
+        placeholder="Enter a long URL"
+        required
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
+      />
+      <button
+        type="submit"
+        class="bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+      >
+        Shorten
+      </button>
     </form>
 
     {% if short_url %}
     <div class="mt-6 text-center text-sm">
       <p>Short URL:</p>
       <div class="flex justify-center items-center gap-2 mt-2">
-        <a href="{{ short_url }}" id="shortLink" class="text-indigo-600 dark:text-indigo-400 font-medium break-all hover:underline" target="_blank">{{ short_url }}</a>
-        <button onclick="copyToClipboard('{{ short_url }}')" class="bg-indigo-600 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700">Copy</button>
+        <a
+          href="{{ short_url }}"
+          id="shortLink"
+          class="text-indigo-600 dark:text-indigo-400 font-medium break-all hover:underline"
+          target="_blank"
+        >{{ short_url }}</a>
+        <button
+          onclick="copyToClipboard('{{ short_url }}')"
+          class="bg-indigo-600 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700"
+        >
+          Copy
+        </button>
       </div>
       {% if qr_b64 %}
       <div class="mt-4">
@@ -50,49 +71,86 @@
     {% endif %}
 
     {% if links %}
-    <div class="mt-8">
-      <button onclick="toggleTable()" class="text-indigo-600 dark:text-indigo-400 font-medium mb-2">Show/Hide Recent Links</button>
-      <div id="linksTable" class="hidden overflow-x-auto">
-        <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
-          <thead>
-            <tr class="text-gray-600 dark:text-gray-300">
-              <th class="px-4 py-2">Short</th>
-              <th class="px-4 py-2">Original</th>
-              <th class="px-4 py-2">Copy</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for short, original in links %}
-            <tr class="border-t dark:border-gray-700">
-              <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
-              <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
-              <td class="px-4 py-2">
-                <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <div class="text-center mt-8">
+      <button
+        onclick="document.getElementById('historyTable').classList.toggle('hidden')"
+        class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+      >
+        Show / Hide Recent Links
+      </button>
+    </div>
+
+    <div id="historyTable" class="hidden overflow-x-auto mt-4">
+      <table class="w-full text-sm text-left border-t border-gray-300 dark:border-gray-600">
+        <thead>
+          <tr class="text-gray-600 dark:text-gray-300">
+            <th class="px-4 py-2">Short</th>
+            <th class="px-4 py-2">Original</th>
+            <th class="px-4 py-2">Copy</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for short, original in links %}
+          <tr class="border-t dark:border-gray-700">
+            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
+            <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
+            <td class="px-4 py-2">
+              <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
     {% endif %}
   </div>
 
-  <script>
-    document.getElementById('darkToggle')?.addEventListener('change', function() {
-      document.documentElement.classList.toggle('dark');
-    });
+  <!-- Features Section -->
+  <section class="w-full max-w-6xl mt-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-center">
+      <div>
+        <div class="text-4xl">👍</div>
+        <h3 class="text-xl font-semibold mt-2">Easy</h3>
+        <p class="text-sm mt-1">Shortly is fast and easy—just paste a link and click shorten!</p>
+      </div>
+      <div>
+        <div class="text-4xl">🔗</div>
+        <h3 class="text-xl font-semibold mt-2">Shortened</h3>
+        <p class="text-sm mt-1">Handles URLs of any length with reliable shortening.</p>
+      </div>
+      <div>
+        <div class="text-4xl">🔒</div>
+        <h3 class="text-xl font-semibold mt-2">Secure</h3>
+        <p class="text-sm mt-1">HTTPS encryption ensures your links are safe and private.</p>
+      </div>
+      <div>
+        <div class="text-4xl">📊</div>
+        <h3 class="text-xl font-semibold mt-2">Statistics</h3>
+        <p class="text-sm mt-1">Track how many people clicked your short URLs.</p>
+      </div>
+      <div>
+        <div class="text-4xl">✅</div>
+        <h3 class="text-xl font-semibold mt-2">Reliable</h3>
+        <p class="text-sm mt-1">Spam links? Gone. Malicious links? Blocked. Reliability, always.</p>
+      </div>
+      <div>
+        <div class="text-4xl">📱</div>
+        <h3 class="text-xl font-semibold mt-2">Devices</h3>
+        <p class="text-sm mt-1">Works beautifully across desktop, mobile, and tablet screens.</p>
+      </div>
+    </div>
+  </section>
 
+  <script>
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied to clipboard!");
       });
     }
 
-    function toggleTable() {
-      const table = document.getElementById('linksTable');
-      table.classList.toggle('hidden');
-    }
+    document.getElementById('darkToggle')?.addEventListener('change', function () {
+      document.documentElement.classList.toggle('dark');
+    });
   </script>
 </body>
 </html>
