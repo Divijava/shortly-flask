@@ -1,38 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shortly — URL Shortener</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    // Tell Tailwind to support dark mode via class
-    tailwind.config = {
-      darkMode: 'class'
-    };
-  </script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center px-4 text-gray-800 dark:text-gray-100">
-
-  <div class="relative bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-md">
-
-    <!-- Dark mode toggle -->
-    <div class="absolute top-4 right-4">
-      <button onclick="toggleDarkMode()" class="text-sm text-gray-500 dark:text-gray-300 border px-3 py-1 rounded-md">
-        Toggle Dark
-      </button>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-xl">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Shorten a URL</h1>
+      <button onclick="toggleDarkMode()" class="text-sm text-indigo-600 hover:underline">Toggle Dark Mode</button>
     </div>
 
-    <h1 class="text-2xl font-bold text-center mb-6">Shorten a URL</h1>
-
-    <form method="POST" class="flex flex-col gap-4">
+    <form method="POST" class="flex flex-col gap-4 mb-6">
       <input
         type="text"
         name="url"
         placeholder="Enter a long URL"
         required
-        class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700"
+        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
       />
       <button
         type="submit"
@@ -43,9 +30,9 @@
     </form>
 
     {% if short_url %}
-    <div class="mt-6 text-center text-sm">
-      <p>Short URL:</p>
-      <div class="flex justify-center items-center gap-2 mt-2">
+    <div class="mb-6">
+      <p class="text-sm">Short URL:</p>
+      <div class="flex items-center gap-2 mt-2">
         <a
           href="{{ short_url }}"
           id="shortLink"
@@ -60,10 +47,44 @@
         </button>
       </div>
     </div>
+
+    {% if qr_b64 %}
+    <div class="mb-6 text-center">
+      <p class="mb-2 text-sm">QR Code:</p>
+      <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code" class="mx-auto w-32 h-32 rounded-md shadow-md">
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% if links %}
+    <div>
+      <h2 class="text-lg font-semibold mb-2">Recently Shortened</h2>
+      <table class="w-full text-sm border dark:border-gray-700">
+        <thead>
+          <tr class="bg-gray-100 dark:bg-gray-700 text-left">
+            <th class="p-2">Short</th>
+            <th class="p-2">Original</th>
+            <th class="p-2">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for link in links %}
+          <tr class="border-t dark:border-gray-700">
+            <td class="p-2">
+              <a href="{{ request.host_url }}{{ link.short_id }}" class="text-indigo-600 dark:text-indigo-400 hover:underline" target="_blank">
+                /{{ link.short_id }}
+              </a>
+            </td>
+            <td class="p-2 break-all">{{ link.original_url[:40] }}{% if link.original_url|length > 40 %}...{% endif %}</td>
+            <td class="p-2 text-xs">{{ link.created_at.strftime("%b %d, %H:%M") }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% endif %}
   </div>
 
-  <!-- SCRIPTS -->
   <script>
     function copyToClipboard() {
       const text = document.getElementById('shortLink').href;
