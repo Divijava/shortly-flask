@@ -1,31 +1,37 @@
 from flask import Flask, request, redirect, render_template
-import string
-import random
+import string, random
 import psycopg2
 import os
-import urllib.parse as up
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
-# Connect to PostgreSQL using DATABASE_URL (for Render)
+# Parse database connection from DATABASE_URL
 def get_db_connection():
-    up.uses_netloc.append("postgres")
-    url = up.urlparse(os.environ["DATABASE_URL"])
+    result = urlparse(os.environ['DATABASE_URL'])
+
+    username = result.username
+    password = result.password
+    database = result.path[1:]  # strip leading slash
+    hostname = result.hostname
+    port = result.port
+
     return psycopg2.connect(
-        database=url.path[1:],
-        user=url.username,
-        password=url.password,
-        host=url.hostname,
-        port=url.port
+        dbname=database,
+        user=username,
+        password=password,
+        host=hostname,
+        port=port
     )
 
-# Generate short ID
+# Generate random short ID
 def generate_short_id(length=6):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     short_url = None
+
     if request.method == 'POST':
         original_url = request.form['url']
         short_id = generate_short_id()
@@ -56,4 +62,5 @@ def redirect_to_original(short_id):
         return 'Invalid short URL', 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 10000))  # use 10000 locally, PORT on Render
+    app.run(host='0.0.0.0', port=port)
