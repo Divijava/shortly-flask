@@ -7,23 +7,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class'
+      darkMode: 'class',
     }
   </script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col items-center justify-start px-4 py-10">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex items-center justify-center px-4">
   <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-2xl">
 
     <!-- Dark Mode Toggle -->
-    <div class="flex justify-end">
-      <label class="flex items-center space-x-2 cursor-pointer">
-        <span class="text-sm text-gray-600 dark:text-gray-300">🌙</span>
-        <div class="relative">
-          <input type="checkbox" id="darkToggle" class="sr-only">
-          <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
-          <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+    <div class="flex justify-end mb-4">
+      <label for="dark-toggle" class="flex items-center space-x-2 cursor-pointer">
+        <span class="text-yellow-400 text-xl">🌙</span>
+        <input id="dark-toggle" type="checkbox" class="sr-only peer">
+        <div class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-indigo-600 relative transition-colors duration-300">
+          <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 peer-checked:translate-x-6"></div>
         </div>
-        <span class="text-sm text-gray-600 dark:text-gray-300">☀️</span>
+        <span class="text-yellow-500 text-xl">🌞</span>
       </label>
     </div>
 
@@ -62,6 +61,7 @@
           Copy
         </button>
       </div>
+
       {% if qr_b64 %}
       <div class="mt-4">
         <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code" class="mx-auto w-32 h-32 border border-gray-300 dark:border-gray-600 rounded-lg" />
@@ -71,85 +71,81 @@
     {% endif %}
 
     {% if links %}
-    <div class="text-center mt-8">
-      <button
-        onclick="document.getElementById('historyTable').classList.toggle('hidden')"
-        class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
-      >
-        Show / Hide Recent Links
+    <div class="mt-8">
+      <button onclick="document.getElementById('recent-links').classList.toggle('hidden')" class="mb-2 bg-gray-200 dark:bg-gray-600 text-sm px-4 py-2 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
+        Show/Hide Recent Links
       </button>
-    </div>
-
-    <div id="historyTable" class="hidden overflow-x-auto mt-4">
-      <table class="w-full text-sm text-left border-t border-gray-300 dark:border-gray-600">
-        <thead>
-          <tr class="text-gray-600 dark:text-gray-300">
-            <th class="px-4 py-2">Short</th>
-            <th class="px-4 py-2">Original</th>
-            <th class="px-4 py-2">Copy</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for short, original in links %}
-          <tr class="border-t dark:border-gray-700">
-            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
-            <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
-            <td class="px-4 py-2">
-              <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div id="recent-links" class="hidden overflow-x-auto mt-2">
+        <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
+          <thead>
+            <tr class="text-gray-600 dark:text-gray-300">
+              <th class="px-4 py-2">Short</th>
+              <th class="px-4 py-2">Original</th>
+              <th class="px-4 py-2">Copy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for short, original in links %}
+            <tr class="border-t dark:border-gray-700">
+              <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
+              <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
+              <td class="px-4 py-2">
+                <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
     {% endif %}
-  </div>
 
-  <!-- Features Section -->
-  <section class="w-full max-w-6xl mt-12">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-center">
+    <!-- Features Section -->
+    <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
       <div>
-        <div class="text-4xl">👍</div>
-        <h3 class="text-xl font-semibold mt-2">Easy</h3>
-        <p class="text-sm mt-1">Shortly is fast and easy—just paste a link and click shorten!</p>
+        <div class="text-3xl mb-2">👍</div>
+        <h3 class="font-semibold text-lg">Easy</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Enter a URL and get it shortened fast.</p>
       </div>
       <div>
-        <div class="text-4xl">🔗</div>
-        <h3 class="text-xl font-semibold mt-2">Shortened</h3>
-        <p class="text-sm mt-1">Handles URLs of any length with reliable shortening.</p>
+        <div class="text-3xl mb-2">🔗</div>
+        <h3 class="font-semibold text-lg">Shortened</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">No matter how long your URL is, it gets tiny.</p>
       </div>
       <div>
-        <div class="text-4xl">🔒</div>
-        <h3 class="text-xl font-semibold mt-2">Secure</h3>
-        <p class="text-sm mt-1">HTTPS encryption ensures your links are safe and private.</p>
+        <div class="text-3xl mb-2">🔒</div>
+        <h3 class="font-semibold text-lg">Secure</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">HTTPS encrypted and privacy protected.</p>
       </div>
       <div>
-        <div class="text-4xl">📊</div>
-        <h3 class="text-xl font-semibold mt-2">Statistics</h3>
-        <p class="text-sm mt-1">Track how many people clicked your short URLs.</p>
+        <div class="text-3xl mb-2">📊</div>
+        <h3 class="font-semibold text-lg">Stats</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Track how often your link is used.</p>
       </div>
       <div>
-        <div class="text-4xl">✅</div>
-        <h3 class="text-xl font-semibold mt-2">Reliable</h3>
-        <p class="text-sm mt-1">Spam links? Gone. Malicious links? Blocked. Reliability, always.</p>
+        <div class="text-3xl mb-2">✅</div>
+        <h3 class="font-semibold text-lg">Reliable</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Malicious links are filtered automatically.</p>
       </div>
       <div>
-        <div class="text-4xl">📱</div>
-        <h3 class="text-xl font-semibold mt-2">Devices</h3>
-        <p class="text-sm mt-1">Works beautifully across desktop, mobile, and tablet screens.</p>
+        <div class="text-3xl mb-2">📱</div>
+        <h3 class="font-semibold text-lg">Responsive</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Works on phones, tablets, and desktop.</p>
       </div>
     </div>
-  </section>
+  </div>
 
   <script>
+    // Copy to clipboard
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied to clipboard!");
       });
     }
 
-    document.getElementById('darkToggle')?.addEventListener('change', function () {
-      document.documentElement.classList.toggle('dark');
+    // Dark Mode Toggle
+    document.getElementById("dark-toggle").addEventListener("change", function () {
+      document.documentElement.classList.toggle("dark", this.checked);
     });
   </script>
 </body>
