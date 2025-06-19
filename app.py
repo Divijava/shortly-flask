@@ -54,7 +54,8 @@ def home():
 
     # Get all links
     cur.execute("SELECT original_url, short_id FROM urls ORDER BY created_at DESC LIMIT 10")
-    links = [(row[0], request.host_url + row[1]) for row in cur.fetchall()]
+    links = [(row[0], row[1]) for row in cur.fetchall()]
+
 
     cur.close()
     conn.close()
