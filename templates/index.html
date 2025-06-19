@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
+      darkMode: 'class'
     }
   </script>
 </head>
@@ -15,15 +15,14 @@
   <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-2xl">
 
     <!-- Dark Mode Toggle -->
-    <div class="flex justify-end mb-4">
-      <label for="dark-toggle" class="flex items-center space-x-2 cursor-pointer">
-        <span class="text-yellow-400 text-xl">🌙</span>
-        <input id="dark-toggle" type="checkbox" class="sr-only peer">
-        <div class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-indigo-600 relative transition-colors duration-300">
-          <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 peer-checked:translate-x-6"></div>
-        </div>
-        <span class="text-yellow-500 text-xl">🌞</span>
+    <div class="flex justify-end items-center mb-6">
+      <span class="text-xl">🌙</span>
+      <label class="relative inline-flex items-center cursor-pointer mx-2">
+        <input type="checkbox" id="darkToggle" class="sr-only peer" />
+        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600 transition-colors duration-300"></div>
+        <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 peer-checked:translate-x-5"></div>
       </label>
+      <span class="text-xl">🌞</span>
     </div>
 
     <h1 class="text-2xl font-bold text-center mb-6">Shorten a URL</h1>
@@ -71,82 +70,45 @@
     {% endif %}
 
     {% if links %}
-    <div class="mt-8">
-      <button onclick="document.getElementById('recent-links').classList.toggle('hidden')" class="mb-2 bg-gray-200 dark:bg-gray-600 text-sm px-4 py-2 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-        Show/Hide Recent Links
-      </button>
-      <div id="recent-links" class="hidden overflow-x-auto mt-2">
-        <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
-          <thead>
-            <tr class="text-gray-600 dark:text-gray-300">
-              <th class="px-4 py-2">Short</th>
-              <th class="px-4 py-2">Original</th>
-              <th class="px-4 py-2">Copy</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for short, original in links %}
-            <tr class="border-t dark:border-gray-700">
-              <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
-              <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
-              <td class="px-4 py-2">
-                <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <h2 class="mt-8 text-lg font-semibold">Recent Links</h2>
+    <div class="overflow-x-auto mt-2">
+      <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
+        <thead>
+          <tr class="text-gray-600 dark:text-gray-300">
+            <th class="px-4 py-2">Short</th>
+            <th class="px-4 py-2">Original</th>
+            <th class="px-4 py-2">Copy</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for short, original in links %}
+          <tr class="border-t dark:border-gray-700">
+            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
+            <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
+            <td class="px-4 py-2">
+              <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
     {% endif %}
-
-    <!-- Features Section -->
-    <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
-      <div>
-        <div class="text-3xl mb-2">👍</div>
-        <h3 class="font-semibold text-lg">Easy</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Enter a URL and get it shortened fast.</p>
-      </div>
-      <div>
-        <div class="text-3xl mb-2">🔗</div>
-        <h3 class="font-semibold text-lg">Shortened</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">No matter how long your URL is, it gets tiny.</p>
-      </div>
-      <div>
-        <div class="text-3xl mb-2">🔒</div>
-        <h3 class="font-semibold text-lg">Secure</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">HTTPS encrypted and privacy protected.</p>
-      </div>
-      <div>
-        <div class="text-3xl mb-2">📊</div>
-        <h3 class="font-semibold text-lg">Stats</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Track how often your link is used.</p>
-      </div>
-      <div>
-        <div class="text-3xl mb-2">✅</div>
-        <h3 class="font-semibold text-lg">Reliable</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Malicious links are filtered automatically.</p>
-      </div>
-      <div>
-        <div class="text-3xl mb-2">📱</div>
-        <h3 class="font-semibold text-lg">Responsive</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">Works on phones, tablets, and desktop.</p>
-      </div>
-    </div>
   </div>
 
   <script>
+    // Toggle dark mode
+    const toggle = document.getElementById('darkToggle');
+    toggle.addEventListener('change', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
     // Copy to clipboard
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied to clipboard!");
       });
     }
-
-    // Dark Mode Toggle
-    document.getElementById("dark-toggle").addEventListener("change", function () {
-      document.documentElement.classList.toggle("dark", this.checked);
-    });
   </script>
 </body>
 </html>
