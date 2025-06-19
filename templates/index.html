@@ -6,28 +6,29 @@
   <title>Shortly — URL Shortener</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
+    tailwind.config = { darkMode: 'class' }
   </script>
+  <style>
+    input:checked + div + .dot {
+      transform: translateX(1.5rem);
+    }
+  </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex items-center justify-center px-4">
-  <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-2xl">
+  <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-2xl relative">
 
     <!-- Dark Mode Toggle -->
-    <div class="flex justify-end">
-      <label class="flex items-center space-x-2 cursor-pointer">
-        <span class="text-sm text-gray-600 dark:text-gray-300">🌙</span>
-        <div class="relative">
-          <input type="checkbox" id="darkToggle" class="sr-only">
-          <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
-          <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
-        </div>
-        <span class="text-sm text-gray-600 dark:text-gray-300">☀️</span>
+    <div class="absolute top-4 right-4 flex items-center gap-2">
+      <span class="text-yellow-500">🌙</span>
+      <label for="darkToggle" class="inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="darkToggle" class="sr-only peer">
+        <div class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-indigo-600 transition-colors duration-300"></div>
+        <div class="dot absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300"></div>
       </label>
+      <span class="text-yellow-400">☀️</span>
     </div>
 
-    <h1 class="text-2xl font-bold text-center mb-6">Shorten a URL</h1>
+    <h1 class="text-2xl font-bold text-center mb-6 mt-4">Shorten a URL</h1>
 
     <form method="POST" class="flex flex-col gap-4">
       <input
@@ -99,21 +100,29 @@
   </div>
 
   <script>
-    // Copy to clipboard
+    const toggle = document.getElementById('darkToggle');
+    const html = document.documentElement;
+
+    if (localStorage.getItem("theme") === "dark") {
+      toggle.checked = true;
+      html.classList.add("dark");
+    }
+
+    toggle.addEventListener("change", function () {
+      if (this.checked) {
+        html.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        html.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+    });
+
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied to clipboard!");
       });
     }
-
-    // Dark mode toggle
-    const toggle = document.getElementById('darkToggle');
-    const html = document.documentElement;
-    toggle.checked = html.classList.contains('dark');
-
-    toggle.addEventListener('change', () => {
-      html.classList.toggle('dark');
-    });
   </script>
 </body>
 </html>
