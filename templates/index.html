@@ -70,30 +70,42 @@
     {% endif %}
 
     {% if links %}
-    <h2 class="mt-8 text-lg font-semibold">Recent Links</h2>
-    <div class="overflow-x-auto mt-2">
-      <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
-        <thead>
-          <tr class="text-gray-600 dark:text-gray-300">
-            <th class="px-4 py-2">Short</th>
-            <th class="px-4 py-2">Original</th>
-            <th class="px-4 py-2">Copy</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for short, original in links %}
-          <tr class="border-t dark:border-gray-700">
-            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
-            <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
-            <td class="px-4 py-2">
-              <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% endif %}
+<button
+  onclick="toggleRecentLinks()"
+  class="mt-8 mb-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded transition"
+>
+  Show/Hide Recent Links
+</button>
+
+<div id="recentLinks" class="hidden mt-4">
+  <h2 class="text-lg font-semibold">Recent Links</h2>
+  <div class="overflow-x-auto mt-2">
+    <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
+      <thead>
+        <tr class="text-gray-600 dark:text-gray-300">
+          <th class="px-4 py-2">Short</th>
+          <th class="px-4 py-2">Original</th>
+          <th class="px-4 py-2">Copy</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for short, original in links %}
+        <tr class="border-t dark:border-gray-700">
+          <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400 break-all">{{ short }}</td>
+          <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
+          <td class="px-4 py-2">
+            <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+
+    
   </div>
 
   <script>
