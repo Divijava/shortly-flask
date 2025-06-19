@@ -82,13 +82,25 @@
   <div class="overflow-x-auto mt-2">
     <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
       <thead>
-        <tr class="text-gray-600 dark:text-gray-300">
-          <th class="px-4 py-2">Short</th>
-          <th class="px-4 py-2">Original</th>
-          <th class="px-4 py-2">Copy</th>
-        </tr>
-      </thead>
-      <tbody>
+  <tr class="text-gray-600 dark:text-gray-300">
+    <th class="px-4 py-2">Original</th> <!-- ← Long link -->
+    <th class="px-4 py-2">Short</th>    <!-- ← Shortened URL -->
+    <th class="px-4 py-2">Copy</th>
+  </tr>
+</thead>
+<tbody>
+  {% for original, short in links %}
+  <tr class="border-t dark:border-gray-700">
+    <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
+    <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400 break-all">{{ request.host_url }}{{ short }}</td>
+    <td class="px-4 py-2">
+      <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">
+        Copy
+      </button>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
         {% for short, original in links %}
         <tr class="border-t dark:border-gray-700">
           <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400 break-all">{{ short }}</td>
