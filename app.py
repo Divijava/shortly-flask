@@ -1,51 +1,47 @@
 from flask import Flask, request, redirect, render_template
 import string, random
 import psycopg2
+from psycopg2.extras import RealDictCursor
 import os
-from urllib.parse import urlparse
 
 app = Flask(__name__)
 
-# Parse database connection from DATABASE_URL
+# 🔐 Load database URL from Render (environment variable or hardcoded as fallback)
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://shortly_db_4mdg_user:T1QBJODWO5pydNnm344wLqgy37IuQzj2@dpg-d19jc1je5dus7392sq60-a.oregon-postgres.render.com/shortly_db_4mdg")
+
+# Connect to PostgreSQL
 def get_db_connection():
-    result = urlparse(os.environ['DATABASE_URL'])
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
-    username = result.username
-    password = result.password
-    database = result.path[1:]  # strip leading slash
-    hostname = result.hostname
-    port = result.port
-
-    return psycopg2.connect(
-        dbname=database,
-        user=username,
-        password=password,
-        host=hostname,
-        port=port
-    )
-
-# Generate random short ID
+# Generate short ID
 def generate_short_id(length=6):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     short_url = None
-
     if request.method == 'POST':
         original_url = request.form['url']
         short_id = generate_short_id()
 
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("INSERT INTO urls (short_id, original_url) VALUES (%s, %s)", (short_id, original_url))
+        cur.execute("INSERT INTO urls (short_id, original_url, created_at) VALUES (%s, %s, NOW())", (short_id, original_url))
         conn.commit()
         cur.close()
         conn.close()
 
         short_url = request.host_url + short_id
 
-    return render_template('index.html', short_url=short_url)
+    # 🧠 Show last 5 shortened links
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT short_id, original_url, created_at FROM urls ORDER BY created_at DESC LIMIT 5")
+    links = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template('index.html', short_url=short_url, links=links)
 
 @app.route('/<short_id>')
 def redirect_to_original(short_id):
@@ -57,10 +53,9 @@ def redirect_to_original(short_id):
     conn.close()
 
     if result:
-        return redirect(result[0])
+        return redirect(result['original_url'])
     else:
         return 'Invalid short URL', 404
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))  # use 10000 locally, PORT on Render
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
