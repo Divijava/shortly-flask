@@ -5,70 +5,115 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shortly — URL Shortener</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors min-h-screen flex items-center justify-center px-4">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-2xl">
 
-  <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 w-full max-w-xl">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Shorten a URL</h1>
-      <button onclick="toggleDarkMode()" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-        Toggle Dark Mode
-      </button>
+    <!-- Dark Mode Toggle -->
+    <div class="flex justify-end">
+      <label class="flex items-center space-x-2 cursor-pointer">
+        <span class="text-sm text-gray-600 dark:text-gray-300">🌙</span>
+        <div class="relative">
+          <input type="checkbox" id="darkToggle" class="sr-only">
+          <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
+          <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+        </div>
+        <span class="text-sm text-gray-600 dark:text-gray-300">☀️</span>
+      </label>
     </div>
 
+    <h1 class="text-2xl font-bold text-center mb-6">Shorten a URL</h1>
+
     <form method="POST" class="flex flex-col gap-4">
-      <input type="text" name="url" placeholder="Enter a long URL" required
-        class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-white">
-      <button type="submit"
-        class="bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+      <input
+        type="text"
+        name="url"
+        placeholder="Enter a long URL"
+        required
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
+      />
+      <button
+        type="submit"
+        class="bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+      >
         Shorten
       </button>
     </form>
 
     {% if short_url %}
-    <div class="mt-6 text-center">
+    <div class="mt-6 text-center text-sm">
       <p>Short URL:</p>
-      <div class="flex items-center justify-center gap-2 mt-2">
-        <a href="{{ short_url }}" id="shortLink" class="text-indigo-600 hover:underline" target="_blank">
-          {{ short_url }}
-        </a>
-        <button onclick="copyToClipboard()"
-          class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">Copy</button>
+      <div class="flex justify-center items-center gap-2 mt-2">
+        <a
+          href="{{ short_url }}"
+          id="shortLink"
+          class="text-indigo-600 dark:text-indigo-400 font-medium break-all hover:underline"
+          target="_blank"
+        >{{ short_url }}</a>
+        <button
+          onclick="copyToClipboard('{{ short_url }}')"
+          class="bg-indigo-600 text-white px-3 py-1 rounded-md text-sm hover:bg-indigo-700"
+        >
+          Copy
+        </button>
       </div>
 
       {% if qr_b64 %}
       <div class="mt-4">
-        <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code" class="mx-auto w-32 h-32">
+        <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code" class="mx-auto w-32 h-32 border border-gray-300 dark:border-gray-600 rounded-lg" />
       </div>
       {% endif %}
     </div>
     {% endif %}
 
-    <div class="mt-8">
-      <button onclick="toggleTable()"
-        class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-        Show Previous Links
-      </button>
+    {% if links %}
+    <h2 class="mt-8 text-lg font-semibold">Recent Links</h2>
+    <div class="overflow-x-auto mt-2">
+      <table class="w-full text-sm text-left mt-2 border-t border-gray-300 dark:border-gray-600">
+        <thead>
+          <tr class="text-gray-600 dark:text-gray-300">
+            <th class="px-4 py-2">Short</th>
+            <th class="px-4 py-2">Original</th>
+            <th class="px-4 py-2">Copy</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for short, original in links %}
+          <tr class="border-t dark:border-gray-700">
+            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">{{ short }}</td>
+            <td class="px-4 py-2 break-all text-gray-700 dark:text-gray-300">{{ original }}</td>
+            <td class="px-4 py-2">
+              <button onclick="copyToClipboard('{{ request.host_url }}{{ short }}')" class="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">Copy</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
 
-      <div id="linksTable" class="hidden mt-4 overflow-x-auto">
-        <table class="min-w-full bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-          <thead>
-            <tr class="bg-gray-100 dark:bg-gray-700 text-left text-sm uppercase">
-              <th class="px-6 py-3">Original</th>
-              <th class="px-6 py-3">Short</th>
-              <th class="px-6 py-3">Copy</th>
-            </tr>
-          </thead>
-          <tbody class="text-sm">
-            {% for original, short in links %}
-            <tr class="border-b border-gray-200 dark:border-gray-700">
-              <td class="px-6 py-2 truncate max-w-[200px]">{{ original }}</td>
-              <td class="px-6 py-2">
-                <a href="{{ short }}" target="_blank" class="text-indigo-500 hover:underline">{{ short }}</a>
-              </td>
-              <td class="px-6 py-2">
-                <button onclick="navigator.clipboard.writeText('{{ short }}')"
-                  class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-xs">
-                  Copy
-                </button>
-              </td>
+  <script>
+    // Copy to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+      });
+    }
+
+    // Dark mode toggle
+    const toggle = document.getElementById('darkToggle');
+    const html = document.documentElement;
+    toggle.checked = html.classList.contains('dark');
+
+    toggle.addEventListener('change', () => {
+      html.classList.toggle('dark');
+    });
+  </script>
+</body>
+</html>
